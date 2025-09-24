@@ -56,9 +56,18 @@ export class CalcCommand implements CommandHandler {
       throw new Error("Invalid format");
     }
 
-    const amount = parseFloat(match[1]);
-    const fromCurrency = match[2].toUpperCase();
-    const toCurrency = match[3]?.toUpperCase() || "KGS";
+    const amountStr = match[1];
+    if (!amountStr) {
+      throw new Error("Amount not found");
+    }
+
+    const amount = parseFloat(amountStr);
+    const fromCurrency = match[2] ? match[2].toUpperCase() : "";
+    const toCurrency = match[3] ? match[3].toUpperCase() : "KGS";
+
+    if (!fromCurrency) {
+      throw new Error("Currency not specified");
+    }
 
     // Получаем актуальные курсы
     const rates = await this.parserService.getCurrencyRates();

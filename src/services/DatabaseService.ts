@@ -266,7 +266,7 @@ export class DatabaseService {
 
       return rows.map(row => ({
         chatId: row.chatId,
-        chatTitle: row.chatTitle || undefined,
+        chatTitle: row.chatTitle || "",
         chatType: row.chatType as 'group' | 'supergroup' | 'channel',
         registeredBy: row.registeredBy,
         subscribedAt: new Date(row.subscribedAt)
@@ -345,7 +345,7 @@ export class DatabaseService {
     this.db.exec(sql);
   }
 
-  prepare(sql: string) {
+  prepare(sql: string): Database.Statement {
     return this.db.prepare(sql);
   }
 }

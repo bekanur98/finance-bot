@@ -40,7 +40,7 @@ export class CallbackHandler {
     this.favoriteStockService = favoriteStockService;
   }
 
-  async handleCallback(ctx: CallbackQueryContext): Promise<void> {
+  async handleCallback(ctx: CallbackQueryContext<any>): Promise<void> {
     const data = ctx.callbackQuery.data;
 
     if (!data) return;
@@ -91,7 +91,10 @@ export class CallbackHandler {
         case "calc_kzt":
         case "calc_cny":
         case "calc_try":
-          await this.showCurrencyCalc(ctx, data.split("_")[1].toUpperCase());
+          const currency = data.split("_")[1];
+          if (currency) {
+            await this.showCurrencyCalc(ctx, currency.toUpperCase());
+          }
           break;
 
         // Алерты
@@ -128,18 +131,24 @@ export class CallbackHandler {
         case "quick_5000":
         case "quick_10000":
         case "quick_50000":
-          await this.handleQuickAmount(ctx, data.split("_")[1]);
+          const amount = data.split("_")[1];
+          if (amount) {
+            await this.handleQuickAmount(ctx, amount);
+          }
           break;
 
         case "calc_cancel":
           await this.handleCalcCancel(ctx);
           break;
 
-        // Быстрые кнопки для процентов алерта
+        // Быстрые кноп��и для процентов алерта
         case "alert_percent_1":
         case "alert_percent_2":
         case "alert_percent_5":
-          await this.handleQuickPercent(ctx, data.split("_")[2]);
+          const percent = data.split("_")[2];
+          if (percent) {
+            await this.handleQuickPercent(ctx, percent);
+          }
           break;
 
         // Удаление алертов
@@ -171,15 +180,24 @@ export class CallbackHandler {
         default:
           if (data.startsWith("currency_")) {
             const currency = data.split("_")[1];
-            await this.selectCurrency(ctx, currency);
+            if (currency) {
+              await this.selectCurrency(ctx, currency);
+            }
           } else if (data.startsWith("confirm_")) {
             const action = data.split("_")[1];
-            await this.handleConfirmation(ctx, action);
+            if (action) {
+              await this.handleConfirmation(ctx, action);
+            }
           } else if (data.startsWith("cancel_")) {
             await this.handleCancel(ctx);
           } else if (data.startsWith("remove_alert_")) {
-            const alertId = parseInt(data.split("_")[2]);
-            await this.handleRemoveAlert(ctx, alertId);
+            const alertIdStr = data.split("_")[2];
+            if (alertIdStr) {
+              const alertId = parseInt(alertIdStr);
+              if (!isNaN(alertId)) {
+                await this.handleRemoveAlert(ctx, alertId);
+              }
+            }
           }
           break;
       }
@@ -189,7 +207,7 @@ export class CallbackHandler {
     }
   }
 
-  private async showMainMenu(ctx: CallbackQueryContext): Promise<void> {
+  private async showMainMenu(ctx: CallbackQueryContext<any>): Promise<void> {
     const keyboard = KeyboardService.getMainMenu();
 
     await ctx.editMessageText(
@@ -202,8 +220,8 @@ export class CallbackHandler {
     );
   }
 
-  private async showExchange(ctx: CallbackQueryContext): Promise<void> {
-    // Показываем loading
+  private async showExchange(ctx: CallbackQueryContext<any>): Promise<void> {
+    // ��оказываем loading
     await ctx.editMessageText("⏳ Получаю актуальные курсы валют...");
 
     try {
@@ -237,7 +255,7 @@ export class CallbackHandler {
     }
   }
 
-  private async showGold(ctx: CallbackQueryContext): Promise<void> {
+  private async showGold(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.editMessageText("⏳ Получаю актуальные цены на золото...");
 
     try {
@@ -275,7 +293,7 @@ export class CallbackHandler {
     }
   }
 
-  private async showCalcMenu(ctx: CallbackQueryContext): Promise<void> {
+  private async showCalcMenu(ctx: CallbackQueryContext<any>): Promise<void> {
     const keyboard = KeyboardService.getCalcMenu();
 
     await ctx.editMessageText(
@@ -288,7 +306,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showCurrencyCalc(ctx: CallbackQueryContext, currency: string): Promise<void> {
+  private async showCurrencyCalc(ctx: CallbackQueryContext<any>, currency: string): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -298,7 +316,7 @@ export class CallbackHandler {
     // Обновляем сообщение с inline-клавиатурой вместо обычной
     await ctx.editMessageText(
       `💱 <b>Калькулятор ${currency} → KGS</b>\n\n` +
-      "💬 <b>Введите сумму</b> (например: 100) или нажмите кнопку ниже\n\n" +
+      "💬 <b>Введите сумму</b> (��апример: 100) или нажмите кнопку ниже\n\n" +
       `Пример: если напишете <code>100</code>, получите результат в сомах`,
       {
         parse_mode: "HTML",
@@ -315,7 +333,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showAlertMenu(ctx: CallbackQueryContext): Promise<void> {
+  private async showAlertMenu(ctx: CallbackQueryContext<any>): Promise<void> {
     const keyboard = KeyboardService.getAlertMenu();
 
     await ctx.editMessageText(
@@ -328,7 +346,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showStats(ctx: CallbackQueryContext): Promise<void> {
+  private async showStats(ctx: CallbackQueryContext<any>): Promise<void> {
     const userStats = this.subscriberService.getStats();
     const groupCount = this.groupService.getGroupSubscriberCount();
 
@@ -343,7 +361,7 @@ export class CallbackHandler {
 🏢 <b>Зарегистрированные группы:</b>
 └ Активные: <code>${groupCount}</code>
 
-📈 <b>Общая аудитория рассылки:</b>
+📈 <b>Общая аудит��рия рассылки:</b>
 └ <code>${userStats.activeSubscribers + groupCount}</code> получателей
 
 📅 <i>Обновлено: ${new Date().toLocaleString('ru-RU')}</i>
@@ -355,7 +373,7 @@ export class CallbackHandler {
     });
   }
 
-  private async showSettings(ctx: CallbackQueryContext): Promise<void> {
+  private async showSettings(ctx: CallbackQueryContext<any>): Promise<void> {
     const keyboard = KeyboardService.getSettingsMenu();
 
     await ctx.editMessageText(
@@ -368,7 +386,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showHelp(ctx: CallbackQueryContext): Promise<void> {
+  private async showHelp(ctx: CallbackQueryContext<any>): Promise<void> {
     const helpMessage = `
 🤖 <b>Помощь - Финансовый бот НБКР</b>
 
@@ -398,7 +416,7 @@ export class CallbackHandler {
     });
   }
 
-  private async handleSubscribe(ctx: CallbackQueryContext): Promise<void> {
+  private async handleSubscribe(ctx: CallbackQueryContext<any>): Promise<void> {
     // Логика подписки (будет реализована позже)
     await ctx.editMessageText(
       "✅ <b>Подписка оформлена!</b>\n\n" +
@@ -410,7 +428,7 @@ export class CallbackHandler {
     );
   }
 
-  private async handleUnsubscribe(ctx: CallbackQueryContext): Promise<void> {
+  private async handleUnsubscribe(ctx: CallbackQueryContext<any>): Promise<void> {
     // Логика отписки (будет реализована позже)
     await ctx.editMessageText(
       "👋 <b>Вы успешно отписались</b>\n\n" +
@@ -422,17 +440,17 @@ export class CallbackHandler {
     );
   }
 
-  private async refreshExchange(ctx: CallbackQueryContext): Promise<void> {
+  private async refreshExchange(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.answerCallbackQuery({ text: "🔄 Обновляю курсы...", show_alert: false });
     await this.showExchange(ctx);
   }
 
-  private async refreshGold(ctx: CallbackQueryContext): Promise<void> {
+  private async refreshGold(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.answerCallbackQuery({ text: "🔄 Обновляю цены на золото...", show_alert: false });
     await this.showGold(ctx);
   }
 
-  private async selectCurrency(ctx: CallbackQueryContext, currency: string): Promise<void> {
+  private async selectCurrency(ctx: CallbackQueryContext<any>, currency: string): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -440,7 +458,7 @@ export class CallbackHandler {
     this.stateManager.setState(userId, 'alert_input', { currency });
 
     await ctx.editMessageText(
-      `💱 <b>Выбрана валюта: ${currency}</b>\n\n` +
+      `💱 <b>Выбрана вал��та: ${currency}</b>\n\n` +
       "📊 Теперь введите процент для алерта (например: 2%)\n\n" +
       "💡 Бот уведомит вас, когда курс изменится на указанный процент",
       {
@@ -454,7 +472,7 @@ export class CallbackHandler {
     );
   }
 
-  private async handleConfirmation(ctx: CallbackQueryContext, action: string): Promise<void> {
+  private async handleConfirmation(ctx: CallbackQueryContext<any>, action: string): Promise<void> {
     await ctx.editMessageText(
       `✅ <b>Действие подтверждено</b>\n\n` +
       `Выполняю: ${action}`,
@@ -465,7 +483,7 @@ export class CallbackHandler {
     );
   }
 
-  private async handleCancel(ctx: CallbackQueryContext): Promise<void> {
+  private async handleCancel(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.editMessageText(
       "❌ <b>Действие отменено</b>",
       {
@@ -475,7 +493,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showAddAlert(ctx: CallbackQueryContext): Promise<void> {
+  private async showAddAlert(ctx: CallbackQueryContext<any>): Promise<void> {
     const keyboard = KeyboardService.getCurrencyMenu();
 
     await ctx.editMessageText(
@@ -488,7 +506,7 @@ export class CallbackHandler {
     );
   }
 
-  private async showAlertList(ctx: CallbackQueryContext): Promise<void> {
+  private async showAlertList(ctx: CallbackQueryContext<any>): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -535,7 +553,7 @@ export class CallbackHandler {
     return flags[currency] || "💱";
   }
 
-  private async handleQuickAmount(ctx: CallbackQueryContext, amount: string): Promise<void> {
+  private async handleQuickAmount(ctx: CallbackQueryContext<any>, amount: string): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -544,7 +562,7 @@ export class CallbackHandler {
     const currency = state?.currency;
 
     if (!currency) {
-      await ctx.answerCallbackQuery("❌ Сначала выберите валюту для конвертации");
+      await ctx.answerCallbackQuery("❌ ��начала выберите валюту для конвертации");
       return;
     }
 
@@ -555,7 +573,7 @@ export class CallbackHandler {
       await ctx.editMessageText(result, {
         parse_mode: "HTML",
         reply_markup: new InlineKeyboard()
-          .text("🔄 Еще раз", `calc_${currency.toLowerCase()}`)
+          .text("🔄 Ещ�� раз", `calc_${currency.toLowerCase()}`)
           .text("🏠 Главное меню", "main_menu")
       });
 
@@ -576,11 +594,11 @@ export class CallbackHandler {
     }
   }
 
-  private async handleCalcCancel(ctx: CallbackQueryContext): Promise<void> {
+  private async handleCalcCancel(ctx: CallbackQueryContext<any>): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
-    // Сбрасываем состояние пользователя
+    // Сбрасываем с��остояние пользователя
     this.stateManager.resetState(userId);
 
     await ctx.editMessageText(
@@ -593,7 +611,7 @@ export class CallbackHandler {
     );
   }
 
-  private async handleQuickPercent(ctx: CallbackQueryContext, percent: string): Promise<void> {
+  private async handleQuickPercent(ctx: CallbackQueryContext<any>, percent: string): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -602,7 +620,7 @@ export class CallbackHandler {
     const currency = state?.currency;
 
     if (!currency) {
-      await ctx.answerCallbackQuery("❌ Сначала выберите валюту для алерта");
+      await ctx.answerCallbackQuery("❌ Сначала ��ыберите валюту для алерта");
       return;
     }
 
@@ -643,7 +661,7 @@ export class CallbackHandler {
     this.stateManager.clearState(userId);
   }
 
-  private async showRemoveAlertMenu(ctx: CallbackQueryContext): Promise<void> {
+  private async showRemoveAlertMenu(ctx: CallbackQueryContext<any>): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -673,7 +691,7 @@ export class CallbackHandler {
       // Создаем кнопки для каждого алерта
       const keyboard = new InlineKeyboard();
 
-      userAlerts.forEach((alert, index) => {
+      userAlerts.forEach((alert) => {
         const currencyFlag = this.getCurrencyFlag(alert.currency);
         keyboard.text(
           `❌ ${currencyFlag} ${alert.currency} ${alert.percentage}%`,
@@ -691,7 +709,7 @@ export class CallbackHandler {
     }
   }
 
-  private async handleRemoveAlert(ctx: CallbackQueryContext, alertId: number): Promise<void> {
+  private async handleRemoveAlert(ctx: CallbackQueryContext<any>, alertId: number): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -712,7 +730,7 @@ export class CallbackHandler {
       await ctx.editMessageText(
         `✅ <b>Алерт удален!</b>\n\n` +
         `${currencyFlag} <b>${alertToRemove.currency}</b> - <code>${alertToRemove.percentage}%</code>\n\n` +
-        `Вы больше не будете получать уведомления об изменениях курса ${alertToRemove.currency} на ${alertToRemove.percentage}%`,
+        `Вы боль��е не будете получать уведомления об изменениях курса ${alertToRemove.currency} на ${alertToRemove.percentage}%`,
         {
           parse_mode: "HTML",
           reply_markup: new InlineKeyboard()
@@ -732,7 +750,7 @@ export class CallbackHandler {
     }
   }
 
-  private async showStocks(ctx: CallbackQueryContext): Promise<void> {
+  private async showStocks(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.editMessageText("⏳ Получаю данные о топ-10 акций США...");
 
     try {
@@ -783,11 +801,11 @@ export class CallbackHandler {
     }
   }
 
-  private async showTopStocks(ctx: CallbackQueryContext): Promise<void> {
-    await this.showStocks(ctx); // Используем тот же метод
+  private async showTopStocks(ctx: CallbackQueryContext<any>): Promise<void> {
+    await this.showStocks(ctx); // Исп��льзуем тот же метод
   }
 
-  private async showFavoriteStocks(ctx: CallbackQueryContext): Promise<void> {
+  private async showFavoriteStocks(ctx: CallbackQueryContext<any>): Promise<void> {
     const userId = ctx.from?.id;
     if (!userId) return;
 
@@ -845,10 +863,10 @@ export class CallbackHandler {
     }
   }
 
-  private async showStockSearch(ctx: CallbackQueryContext): Promise<void> {
+  private async showStockSearch(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.editMessageText(
       "🔍 <b>Поиск акций</b>\n\n" +
-      "💬 Используйте команду для поиска:\n" +
+      "💬 Испо��ьзуйте команду для поиска:\n" +
       "<code>/stocks AAPL</code> - для поиска Apple\n" +
       "<code>/stocks Tesla</code> - для поиска по названию\n\n" +
       "💡 Или выберите популярные акции ниже:",
@@ -859,7 +877,7 @@ export class CallbackHandler {
     );
   }
 
-  private async refreshStocks(ctx: CallbackQueryContext): Promise<void> {
+  private async refreshStocks(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.answerCallbackQuery({ text: "🔄 Обновляю данные по акциям...", show_alert: false });
     await this.showStocks(ctx);
   }

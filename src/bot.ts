@@ -73,7 +73,7 @@ commands.forEach(command => {
 
 // Handle callback queries (inline button presses)
 bot.on("callback_query", async (ctx) => {
-  await callbackHandler.handleCallback(ctx);
+  await callbackHandler.handleCallback(ctx as any);
 });
 
 // Handle messages from persistent keyboard
@@ -102,7 +102,7 @@ bot.on("message:text", async (ctx) => {
             reply_markup: KeyboardService.getMainMenu()
           });
 
-          // Очищаем состояние после успешного расчета
+          // Очищаем сост��яние после успешного расчета
           stateManager.clearState(userId);
           return;
 
@@ -123,7 +123,7 @@ bot.on("message:text", async (ctx) => {
         await ctx.reply(
           "❌ <b>Неверная сумма</b>\n\n" +
           "Введите корректное число от 0.01 до 1,000,000,000\n" +
-          "Например: <code>100</code> или <code>50.5</code>",
+          "Например: <code>100</code> ��ли <code>50.5</code>",
           {
             parse_mode: "HTML",
             reply_markup: KeyboardService.getAmountKeyboard()
@@ -134,7 +134,7 @@ bot.on("message:text", async (ctx) => {
     } else if (userState && userState.action === 'alert_input') {
       // Пользователь вводит процент для алерта
       const percentMatch = text.match(/^(\d+(?:\.\d+)?)%?$/);
-      if (percentMatch) {
+      if (percentMatch && percentMatch[1]) {
         const percent = parseFloat(percentMatch[1]);
         const currency = userState.currency!;
 
@@ -197,17 +197,17 @@ bot.on("message:text", async (ctx) => {
   switch (text) {
     case "💱 Курсы":
       const exchangeCmd = new ExchangeCommand(parserService);
-      await exchangeCmd.execute(ctx);
+      await exchangeCmd.execute(ctx as any);
       break;
 
     case "🥇 Золото":
       const goldCmd = new GoldCommand(parserService);
-      await goldCmd.execute(ctx);
+      await goldCmd.execute(ctx as any);
       break;
 
     case "📈 Акции":
       const stockCmd = new StockCommand(stockService);
-      await stockCmd.execute(ctx);
+      await stockCmd.execute(ctx as any);
       break;
 
     case "🧮 Калькулятор":
@@ -223,7 +223,7 @@ bot.on("message:text", async (ctx) => {
 
     case "📊 Статистика":
       const statsCmd = new StatsCommand(subscriberService, groupService);
-      await statsCmd.execute(ctx);
+      await statsCmd.execute(ctx as any);
       break;
 
     case "🔔 Подписка":
@@ -242,7 +242,7 @@ bot.on("message:text", async (ctx) => {
 
     case "❓ Помощь":
       const helpCmd = new HelpCommand();
-      await helpCmd.execute(ctx);
+      await helpCmd.execute(ctx as any);
       break;
 
     // Обработка быстрых сумм для калькулятора
@@ -298,7 +298,7 @@ bot.on("message:text", async (ctx) => {
       break;
 
     case "❌ Отмена":
-      // Очищаем состояние пользователя при отмене
+      // Очищаем сост��яние пользователя при отмене
       if (userId) {
         stateManager.clearState(userId);
       }
@@ -314,7 +314,7 @@ bot.on("message:text", async (ctx) => {
     default:
       // Если сообщение не распознано, показываем главное меню
       await ctx.reply(
-        "🤖 <b>Не понимаю эту команду</b>\n\n" +
+        "🤖 <b>Не по��имаю эту команду</b>\n\n" +
         "Используйте кнопки ниже или команды:",
         {
           parse_mode: "HTML",

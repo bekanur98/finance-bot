@@ -114,12 +114,15 @@ export class SchedulerService {
             await new Promise(resolve => setTimeout(resolve, 200));
 
           } catch (error) {
-            console.error(`Failed to send financial report to group ${group.chatId}:`, error);
+            console.error(`❌ Failed to send to group ${group.chatId}:`, error);
 
-            // If bot was removed from group, unregister it
-            if (error.error_code === 403 || error.error_code === 400) {
-              console.log(`🗑️ Removing inactive group ${group.chatId} from subscribers`);
-              this.groupService.removeGroupSubscriber(group.chatId);
+            // Type guard для проверки структуры ошибки
+            if (error && typeof error === 'object' && 'error_code' in error) {
+              const telegramError = error as { error_code: number };
+              if (telegramError.error_code === 403 || telegramError.error_code === 400) {
+                console.log(`🗑️ Removing inactive group: ${group.chatId}`);
+                this.groupService.removeGroupSubscriber(group.chatId);
+              }
             }
           }
         }

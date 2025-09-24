@@ -65,10 +65,10 @@ export class AlertService {
         userId: row.user_id,
         currency: row.currency,
         percentage: row.percentage,
-        isActive: row.is_active === 1,
+        isActive: Boolean(row.is_active),
         createdAt: new Date(row.created_at),
-        lastTriggered: row.last_triggered ? new Date(row.last_triggered) : undefined
-      }));
+        ...(row.last_triggered && { lastTriggered: new Date(row.last_triggered) })
+      })) as Alert[];
     } catch (error) {
       console.error("Error getting user alerts:", error);
       return [];
@@ -90,10 +90,10 @@ export class AlertService {
         userId: row.user_id,
         currency: row.currency,
         percentage: row.percentage,
-        isActive: row.is_active === 1,
+        isActive: Boolean(row.is_active),
         createdAt: new Date(row.created_at),
-        lastTriggered: row.last_triggered ? new Date(row.last_triggered) : undefined
-      }));
+        ...(row.last_triggered && { lastTriggered: new Date(row.last_triggered) })
+      })) as Alert[];
     } catch (error) {
       console.error("Error getting all alerts:", error);
       return [];

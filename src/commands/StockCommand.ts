@@ -115,7 +115,9 @@ export class StockCommand implements CommandHandler {
         message += `└ Регион: ${result.region}\n\n`;
       });
 
-      message += `💡 <b>Получить котировку:</b> <code>/stocks ${searchResults[0].symbol}</code>`;
+      if (searchResults[0]) {
+        message += `💡 <b>Получить котировку:</b> <code>/stocks ${searchResults[0].symbol}</code>`;
+      }
 
       await ctx.api.editMessageText(
         ctx.chat.id,
