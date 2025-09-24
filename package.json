@@ -4,7 +4,12 @@
   "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/bot.ts"
+    "dev": "tsx watch src/bot.ts",
+    "start": "npx tsx src/bot.ts",
+    "build": "tsc"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "author": "",
   "license": "ISC",
