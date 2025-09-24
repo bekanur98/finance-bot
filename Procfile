@@ -1,1 +1,1 @@
-worker: npx tsx src/bot.ts --transpile-only
+worker: npx tsx src/bot.ts
