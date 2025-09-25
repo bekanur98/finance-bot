@@ -359,11 +359,5 @@ process.on('SIGTERM', () => {
 
 // Start the bot
 bot.start();
+webAdminService.start();
 
-// Start web admin interface if ADMIN_TOKEN is provided
-if (process.env.ADMIN_TOKEN) {
-  webAdminService.start();
-  console.log('🌐 Web admin interface started');
-} else {
-  console.log('⚠️ ADMIN_TOKEN not set, web interface disabled');
-}
