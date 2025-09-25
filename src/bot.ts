@@ -26,9 +26,11 @@ import { TestAlertCommand } from "./commands/TestAlertCommand";
 import { StockService } from "./services/StockService";
 import { FavoriteStockService } from "./services/FavoriteStockService";
 import { StockCommand } from "./commands/StockCommand";
+import { WebAdminService } from "./services/WebAdminService";
 
 // Create an instance of the `Bot` class and pass your bot token to it.
 const bot = new Bot("985756606:AAEVuaQzTeDDo8ZVw4uygdXp8TfVYHPQfVQ");
+// const bot = new Bot("6793417861:AAFa3WG9ONHCkzLZ7oWGXW4cPdafMzBISmo");
 
 console.warn("Bot is starting...");
 
@@ -44,6 +46,9 @@ const alertMonitorService = new AlertMonitorService(alertService, parserService,
 const stateManager = new StateManager();
 const calculatorService = new CalculatorService(parserService);
 const schedulerService = new SchedulerService(subscriberService, groupService, parserService, bot);
+
+// Initialize web admin interface
+const webAdminService = new WebAdminService(dbService);
 
 // Initialize callback handler
 const callbackHandler = new CallbackHandler(parserService, subscriberService, groupService, stateManager, calculatorService, alertService, stockService, favoriteStockService);
@@ -89,7 +94,7 @@ bot.on("message:text", async (ctx) => {
     const userState = stateManager.getState(userId);
 
     if (userState && userState.action === 'calc_input') {
-      // Пользователь вводит сумму для калькулятора
+      // Пользо��атель вводит сумму для калькулятора
       if (calculatorService.isValidAmount(text)) {
         const amount = parseFloat(text);
         const currency = userState.currency!;
@@ -102,7 +107,7 @@ bot.on("message:text", async (ctx) => {
             reply_markup: KeyboardService.getMainMenu()
           });
 
-          // Очищаем состояние после успешного расчета
+          // Очи��аем состояние после успешного расчета
           stateManager.clearState(userId);
           return;
 
@@ -123,7 +128,7 @@ bot.on("message:text", async (ctx) => {
         await ctx.reply(
           "❌ <b>Неверная сумма</b>\n\n" +
           "Введите корректное число от 0.01 до 1,000,000,000\n" +
-          "Например: <code>100</code> или <code>50.5</code>",
+          "Например: <code>100</code> ��ли <code>50.5</code>",
           {
             parse_mode: "HTML",
             reply_markup: KeyboardService.getAmountKeyboard()
@@ -132,7 +137,7 @@ bot.on("message:text", async (ctx) => {
         return;
       }
     } else if (userState && userState.action === 'alert_input') {
-      // Пользователь вводит процент для алерта
+      // Пол��зователь вводит процент для алерта
       const percentMatch = text.match(/^(\d+(?:\.\d+)?)%?$/);
       if (percentMatch && percentMatch[1]) {
         const percent = parseFloat(percentMatch[1]);
@@ -354,3 +359,11 @@ process.on('SIGTERM', () => {
 
 // Start the bot
 bot.start();
+
+// Start web admin interface if ADMIN_TOKEN is provided
+if (process.env.ADMIN_TOKEN) {
+  webAdminService.start();
+  console.log('🌐 Web admin interface started');
+} else {
+  console.log('⚠️ ADMIN_TOKEN not set, web interface disabled');
+}

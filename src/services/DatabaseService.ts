@@ -336,6 +336,11 @@ export class DatabaseService {
     }
   }
 
+  // Get database instance for direct access
+  getDb(): Database.Database {
+    return this.db;
+  }
+
   close(): void {
     this.db.close();
   }
