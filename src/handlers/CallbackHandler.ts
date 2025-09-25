@@ -141,7 +141,7 @@ export class CallbackHandler {
           await this.handleCalcCancel(ctx);
           break;
 
-        // Быстрые кноп��и для процентов алерта
+        // Быстрые кнопки для процентов алерта
         case "alert_percent_1":
         case "alert_percent_2":
         case "alert_percent_5":
@@ -221,7 +221,7 @@ export class CallbackHandler {
   }
 
   private async showExchange(ctx: CallbackQueryContext<any>): Promise<void> {
-    // ��оказываем loading
+    // Показываем loading
     await ctx.editMessageText("⏳ Получаю актуальные курсы валют...");
 
     try {
@@ -316,7 +316,7 @@ export class CallbackHandler {
     // Обновляем сообщение с inline-клавиатурой вместо обычной
     await ctx.editMessageText(
       `💱 <b>Калькулятор ${currency} → KGS</b>\n\n` +
-      "💬 <b>Введите сумму</b> (��апример: 100) или нажмите кнопку ниже\n\n" +
+      "💬 <b>Введите сумму</b> (Например: 100) или нажмите кнопку ниже\n\n" +
       `Пример: если напишете <code>100</code>, получите результат в сомах`,
       {
         parse_mode: "HTML",
@@ -361,7 +361,7 @@ export class CallbackHandler {
 🏢 <b>Зарегистрированные группы:</b>
 └ Активные: <code>${groupCount}</code>
 
-📈 <b>Общая аудит��рия рассылки:</b>
+📈 <b>Общая аудитория рассылки:</b>
 └ <code>${userStats.activeSubscribers + groupCount}</code> получателей
 
 📅 <i>Обновлено: ${new Date().toLocaleString('ru-RU')}</i>
@@ -458,7 +458,7 @@ export class CallbackHandler {
     this.stateManager.setState(userId, 'alert_input', { currency });
 
     await ctx.editMessageText(
-      `💱 <b>Выбрана вал��та: ${currency}</b>\n\n` +
+      `💱 <b>Выбрана валюта: ${currency}</b>\n\n` +
       "📊 Теперь введите процент для алерта (например: 2%)\n\n" +
       "💡 Бот уведомит вас, когда курс изменится на указанный процент",
       {
@@ -562,7 +562,7 @@ export class CallbackHandler {
     const currency = state?.currency;
 
     if (!currency) {
-      await ctx.answerCallbackQuery("❌ ��начала выберите валюту для конвертации");
+      await ctx.answerCallbackQuery("❌ Сначала выберите валюту для конвертации");
       return;
     }
 
@@ -573,7 +573,7 @@ export class CallbackHandler {
       await ctx.editMessageText(result, {
         parse_mode: "HTML",
         reply_markup: new InlineKeyboard()
-          .text("🔄 Ещ�� раз", `calc_${currency.toLowerCase()}`)
+          .text("🔄 Еще раз", `calc_${currency.toLowerCase()}`)
           .text("🏠 Главное меню", "main_menu")
       });
 
@@ -598,7 +598,7 @@ export class CallbackHandler {
     const userId = ctx.from?.id;
     if (!userId) return;
 
-    // Сбрасываем с��остояние пользователя
+    // Сбрасываем соостояние пользователя
     this.stateManager.resetState(userId);
 
     await ctx.editMessageText(
@@ -620,7 +620,7 @@ export class CallbackHandler {
     const currency = state?.currency;
 
     if (!currency) {
-      await ctx.answerCallbackQuery("❌ Сначала ��ыберите валюту для алерта");
+      await ctx.answerCallbackQuery("❌ Сначала выберите валюту для алерта");
       return;
     }
 
@@ -730,7 +730,7 @@ export class CallbackHandler {
       await ctx.editMessageText(
         `✅ <b>Алерт удален!</b>\n\n` +
         `${currencyFlag} <b>${alertToRemove.currency}</b> - <code>${alertToRemove.percentage}%</code>\n\n` +
-        `Вы боль��е не будете получать уведомления об изменениях курса ${alertToRemove.currency} на ${alertToRemove.percentage}%`,
+        `Вы больше не будете получать уведомления об изменениях курса ${alertToRemove.currency} на ${alertToRemove.percentage}%`,
         {
           parse_mode: "HTML",
           reply_markup: new InlineKeyboard()
@@ -802,7 +802,7 @@ export class CallbackHandler {
   }
 
   private async showTopStocks(ctx: CallbackQueryContext<any>): Promise<void> {
-    await this.showStocks(ctx); // Исп��льзуем тот же метод
+    await this.showStocks(ctx); // Используем тот же метод
   }
 
   private async showFavoriteStocks(ctx: CallbackQueryContext<any>): Promise<void> {
@@ -866,7 +866,7 @@ export class CallbackHandler {
   private async showStockSearch(ctx: CallbackQueryContext<any>): Promise<void> {
     await ctx.editMessageText(
       "🔍 <b>Поиск акций</b>\n\n" +
-      "💬 Испо��ьзуйте команду для поиска:\n" +
+      "💬 Используйте команду для поиска:\n" +
       "<code>/stocks AAPL</code> - для поиска Apple\n" +
       "<code>/stocks Tesla</code> - для поиска по названию\n\n" +
       "💡 Или выберите популярные акции ниже:",

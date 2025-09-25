@@ -19,7 +19,7 @@ export class SchedulerService {
 
   startDailyMessages(): void {
     // Schedule a message every day at 09:05 local time
-    cron.schedule("5 9 * * *", async () => {
+    cron.schedule("5 5 * * *", async () => {
       console.log('🕐 Starting daily financial report broadcast...');
 
       try {

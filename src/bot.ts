@@ -102,7 +102,7 @@ bot.on("message:text", async (ctx) => {
             reply_markup: KeyboardService.getMainMenu()
           });
 
-          // Очищаем сост��яние после успешного расчета
+          // Очищаем состояние после успешного расчета
           stateManager.clearState(userId);
           return;
 
@@ -123,7 +123,7 @@ bot.on("message:text", async (ctx) => {
         await ctx.reply(
           "❌ <b>Неверная сумма</b>\n\n" +
           "Введите корректное число от 0.01 до 1,000,000,000\n" +
-          "Например: <code>100</code> ��ли <code>50.5</code>",
+          "Например: <code>100</code> или <code>50.5</code>",
           {
             parse_mode: "HTML",
             reply_markup: KeyboardService.getAmountKeyboard()
@@ -298,7 +298,7 @@ bot.on("message:text", async (ctx) => {
       break;
 
     case "❌ Отмена":
-      // Очищаем сост��яние пользователя при отмене
+      // Очищаем состояние пользователя при отмене
       if (userId) {
         stateManager.clearState(userId);
       }
