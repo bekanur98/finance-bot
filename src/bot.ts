@@ -341,9 +341,6 @@ schedulerService.startDailyMessages();
 // Start alert monitoring
 alertMonitorService.startMonitoring();
 
-// Handle other messages
-bot.on("message", (ctx) => ctx.reply("Got another message!"));
-
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('🛑 Shutting down bot...');
